@@ -73,15 +73,18 @@ function run(p: Uint8Array, inp: Uint8Array): [Uint8Array, number] {
   return [o.subarray(0, n), code];
 }
 
-for (const id of readdirSync("/input").sort()) {
+const IN_DIR = process.env.MAKEFUN_INPUT_DIR ?? "/input";
+const OUT_DIR = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
+
+for (const id of readdirSync(IN_DIR).sort()) {
   if (!/^i\d+$/.test(id)) continue;
-  const dir = `/input/${id}`;
+  const dir = `${IN_DIR}/${id}`;
   let prog: Buffer;
   try { prog = readFileSync(`${dir}/program.bin`); } catch { continue; }
   let inp: Uint8Array;
   try { inp = readFileSync(`${dir}/input.bin`); } catch { inp = new Uint8Array(0); }
   const [out, code] = run(prog, inp);
-  mkdirSync(`/output/${id}`, { recursive: true });
-  writeFileSync(`/output/${id}/stdout.bin`, out);
-  writeFileSync(`/output/${id}/exit.txt`, `${code}\n`);
+  mkdirSync(`${OUT_DIR}/${id}`, { recursive: true });
+  writeFileSync(`${OUT_DIR}/${id}/stdout.bin`, out);
+  writeFileSync(`${OUT_DIR}/${id}/exit.txt`, `${code}\n`);
 }
